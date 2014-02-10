@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html ng-app="cp-homework" lang="en">
 <head>
 	<title>cp-homework</title>
@@ -17,9 +17,8 @@
 	<div class="page-header"><h1><a href="http://cphw.frostymugsoftware.com">cp-homework</a></h1></div>
 	<div class="row">
 		<p class="btn-group">
-			<a class="btn btn-default" role="button" href="index.html">New</a>
-			<a class="btn btn-default" role="button" href="index.html?id=1">1</a>
-			<a class="btn btn-default" role="button" href="index.html?id=2">2</a>
+			<a class="btn btn-default" role="button" href="">New</a>
+			<a ng-repeat="p in persons" class="btn btn-default" role="button" href="/{{p.id}}" title="{{p.firstname}} {{p.lastname}}">{{p.id}}</a>
 		</p>
 	</div>
 	<div class="row">
@@ -160,6 +159,9 @@
 			</form>
 		</div>
 		<div class="col-md-6">
+			<h4>Selected Person</h4>
+			<pre>{{person | json}}</pre>
+			<h4>All Persons</h4>
 			<pre>{{persons | json}}</pre>
 		</div>
 	</div>
@@ -186,41 +188,16 @@
 
 	app.controller('MyController', function($scope, queryParams) {
 		
-		$scope.person = {};
-		$scope.persons = [
-			{
-				firstname: "George",
-				lastname: "Washington",
-				email: "gwashington@gmail.com",
-				sex: "M",
-				city: "Colonial Beach",
-				state: "VA",
-				comments: "Gold is best. Best. Best. Best.",
-				hobby_cycling: 1,
-				hobby_frisbee: 1,
-				hobby_skiing: 0
-			},
-			{
-				firstname: "John",
-				lastname: "Adams",
-				email: "jadams@gmail.com",
-				sex: "M",
-				city: "Quincy",
-				state: "MA",
-				comments: "I like the things.",
-				hobby_cycling: 1,
-				hobby_frisbee: 0,
-				hobby_skiing: 1
-			}
-		];
+		$scope.person = <?php echo $person ?>;
+		$scope.persons = <?php echo $persons ?>;
 
 		$scope.load = function() {
 			//console.log("inside load", queryParams.id, queryParams.id != null, angular.isNumber(queryParams.id));
-			if (queryParams.id != null && angular.isNumber(parseInt(queryParams.id))) {
+			/*if (queryParams.id != null && angular.isNumber(parseInt(queryParams.id))) {
 				$scope.person = $scope.persons[parseInt(queryParams.id)-1];
-			}
+			}*/
 		};
-		$scope.load();
+		//$scope.load();
 	});
 </script>
 </body>
