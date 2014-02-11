@@ -10,12 +10,12 @@ class Person extends CI_Controller
 	
 	public function get_all()
 	{
-		echo json_encode($this->person_model->get_all_persons());
+		echo json_encode($this->person_model->get_all());
 	}
 
 	public function get($id = 1)
 	{
-		echo json_encode($this->person_model->get_person($id));
+		echo json_encode($this->person_model->get($id));
 	}
 
 	public function upsert($data)

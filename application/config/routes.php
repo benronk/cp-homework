@@ -40,6 +40,7 @@
 
 $route['default_controller'] = "home";
 $route['(:num)'] = "home/index/$1";
+$route['upsert'] = "home/upsert";
 $route['404_override'] = '';
 
 

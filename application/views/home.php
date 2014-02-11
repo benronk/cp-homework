@@ -8,7 +8,7 @@
 	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" />
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js" type="text/javascript"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.10/angular.min.js" type="text/javascript"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js" type="text/javascript"></script>
 </head>
 <body>
@@ -17,7 +17,7 @@
 	<div class="page-header"><h1><a href="http://cphw.frostymugsoftware.com">cp-homework</a></h1></div>
 	<div class="row">
 		<p class="btn-group">
-			<a class="btn btn-default" role="button" href="">New</a>
+			<a class="btn btn-default" role="button" href="/">New</a>
 			<a ng-repeat="p in persons" class="btn btn-default" role="button" href="/{{p.id}}" title="{{p.firstname}} {{p.lastname}}">{{p.id}}</a>
 		</p>
 	</div>
@@ -156,6 +156,11 @@
 						</label>
 					</div>
 				</div>
+				<div class="form-group">
+					<div class="col-md-offset-2 col-md-8">
+						<button class="btn btn-primary" ng-click="submit()">Submit</button>
+					</div>
+				</div>
 			</form>
 		</div>
 		<div class="col-md-6">
@@ -186,7 +191,7 @@
 		return qs;
 	});
 
-	app.controller('MyController', function($scope, queryParams) {
+	app.controller('MyController', function($scope, $http, queryParams) {
 		
 		$scope.person = <?php echo $person ?>;
 		$scope.persons = <?php echo $persons ?>;
@@ -198,6 +203,22 @@
 			}*/
 		};
 		//$scope.load();
+
+		$scope.submit = function() {
+			$http({
+				method: 'POST',
+				url: '/upsert',
+				data: $.param($scope.person),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			})
+			.success(function(data) {
+				$scope.person = data.person;
+				$scope.persons = data.persons;
+			})
+			.error(function(data) {
+				console.log("error", data);
+			});
+		};
 	});
 </script>
 </body>
