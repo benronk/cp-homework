@@ -35,43 +35,50 @@
 				{{successMessage}}
 			</div>
 
-			<form class="form-horizontal" role="form">
-				<div class="form-group">
+			<form class="form-horizontal" role="form" name="form" novalidate>
+				<div class="form-group" ng-class="{'has-error': form.firstname.$invalid && !form.firstname.$pristine, 'has-feedback': form.firstname.$invalid && !form.firstname.$pristine}">
 					<label class="col-md-2 control-label" for="firstname">Firstname</label>
 					<div class="col-md-8">
-						<input type="text" ng-model="person.firstname" class="form-control" placeholder="Firstname" required />
+						<input type="text" ng-model="person.firstname" name="firstname" class="form-control" placeholder="Firstname" required />
+						<span ng-show="form.firstname.$invalid && !form.firstname.$pristine" class="glyphicon glyphicon-remove form-control-feedback"></span>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': form.lastname.$invalid && !form.lastname.$pristine, 'has-feedback': form.lastname.$invalid && !form.lastname.$pristine}">
 					<label class="col-md-2 control-label" for="lastname">Lastname</label>
 					<div class="col-md-8">
-						<input type="text" ng-model="person.lastname" class="form-control" id="lastname" placeholder="Lastname" required />
+						<input type="text" ng-model="person.lastname" name="lastname" class="form-control" id="lastname" placeholder="Lastname" required />
+						<span ng-show="form.lastname.$invalid && !form.lastname.$pristine" class="glyphicon glyphicon-remove form-control-feedback"></span>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': form.email.$invalid && !form.email.$pristine, 'has-feedback': form.email.$invalid && !form.email.$pristine}">
 					<label class="col-md-2 control-label" for="email">Email</label>
 					<div class="col-md-8">
-						<input type="email" ng-model="person.email" class="form-control" id="email" placeholder="Email" required />
+						<input type="email" ng-model="person.email" name="email" class="form-control" id="email" placeholder="Email" required />
+						<span ng-show="form.email.$invalid && !form.email.$pristine" class="glyphicon glyphicon-remove form-control-feedback"></span>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': form.sex.$invalid && !form.sex.$pristine, 'has-feedback': form.sex.$invalid && !form.sex.$pristine}">
 					<label class="col-md-2 control-label">Sex </label>
 					<div class="col-md-8">
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.sex" ng-value="'M'" /> Male
+							<input type="radio" ng-model="person.sex" name="sex" ng-value="'M'" required /> Male
 						</label>
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.sex" ng-value="'F'" /> Female
+							<input type="radio" ng-model="person.sex" name="sex" ng-value="'F'" required /> Female
 						</label>
 					</div>
 				</div>
-				<div class="form-group">
-					<label class="col-md-2 control-label" for="city">City/State</label>
-					<div class="col-md-4">
-						<input type="text" ng-model="person.city" class="form-control" id="city" placeholder="City" required />
+				<div class="form-group" ng-class="{'has-error': form.city.$invalid && !form.city.$pristine, 'has-feedback': form.city.$invalid && !form.city.$pristine}">
+					<label class="col-md-2 control-label" for="city">City</label>
+					<div class="col-md-8">
+						<input type="text" ng-model="person.city" name="city" class="form-control" id="city" placeholder="City" required />
+						<span ng-show="form.city.$invalid && !form.city.$pristine" class="glyphicon glyphicon-remove form-control-feedback"></span>
 					</div>
-					<div class="col-md-4">
-						<select ng-model="person.state" class="form-control" required>
+				</div>
+				<div class="form-group" ng-class="{'has-error': form.state.$invalid && !form.state.$pristine}">
+					<label class="col-md-2 control-label" for="state">State</label>
+					<div class="col-md-5">
+						<select ng-model="person.state" name="state" class="form-control" id="state" required>
 							<option value="AL">Alabama</option>
 							<option value="AK">Alaska</option>
 							<option value="AZ">Arizona</option>
@@ -126,51 +133,51 @@
 						</select>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': form.comments.$invalid && !form.comments.$pristine}">
 					<label class="col-md-2 control-label" for="comments">Comments</label>
 					<div class="col-md-8">
-						<textarea ng-model="person.comments" class="form-control" rows="3" placeholder="Comments" required ></textarea>
+						<textarea ng-model="person.comments" name="comments" class="form-control" rows="3" placeholder="Comments" required ></textarea>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-md-2 control-label">Hobbies:</label>
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': form.cycling.$invalid && !form.cycling.$pristine}">
 					<label class="col-md-2 control-label">Cycling</label>
 					<div class="col-md-8">
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.hobby_cycling" ng-value="1" /> Yes
+							<input type="radio" ng-model="person.hobby_cycling" name="cycling" ng-value="1" required /> Yes
 						</label>
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.hobby_cycling" ng-value="0" /> No
+							<input type="radio" ng-model="person.hobby_cycling" name="cycling" ng-value="0" required /> No
 						</label>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': form.frisbee.$invalid && !form.frisbee.$pristine}">
 					<label class="col-md-2 control-label">Frisbee</label>
 					<div class="col-md-8">
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.hobby_frisbee" ng-value="1" /> Yes
+							<input type="radio" ng-model="person.hobby_frisbee" name="frisbee" ng-value="1" required /> Yes
 						</label>
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.hobby_frisbee" ng-value="0" /> No
+							<input type="radio" ng-model="person.hobby_frisbee" name="frisbee" ng-value="0" required /> No
 						</label>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': form.skiing.$invalid && !form.skiing.$pristine}">
 					<label class="col-md-2 control-label">Skiing</label>
 					<div class="col-md-8">
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.hobby_skiing" ng-value="1" /> Yes
+							<input type="radio" ng-model="person.hobby_skiing" name="skiing" ng-value="1" required /> Yes
 						</label>
 						<label class="radio-inline">
-							<input type="radio" ng-model="person.hobby_skiing" ng-value="0" /> No
+							<input type="radio" ng-model="person.hobby_skiing" name="skiing" ng-value="0" required /> No
 						</label>
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-md-offset-2 col-md-8">
-						<button class="btn btn-primary" ng-click="submit()">{{submitButtonName}}</button>
+						<button class="btn btn-primary" ng-click="submit()" ng-disabled="form.$invalid || form.$pristine">{{submitButtonName}}</button>
 						<a class="btn btn-default" href="/">New Person</a>
 					</div>
 				</div>
@@ -183,6 +190,7 @@
 					<li ng-repeat="p in persons"><a href="/{{p.id}}">{{p.firstname}} {{p.lastname}}</a></li>
 				</ol>
 			</div>
+			
 			<div class="row" ng-hide="response == null">
 				<h4>Response</h4>
 				<pre class="pre-scrollable">{{response | json}}</pre>
@@ -211,7 +219,9 @@
 		$scope.setupForm();
 
 		$scope.submit = function() {
-			console.log($scope.person);
+			
+			if ($scope.form.$invalid) return;
+
 			$http({
 				method: 'POST',
 				url: '/upsert',
