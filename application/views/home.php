@@ -191,7 +191,7 @@
 				</ol>
 			</div>
 			
-			<div class="row" ng-hide="response == null">
+			<div class="row" ng-hide="true || response == null">
 				<h4>Response</h4>
 				<pre class="pre-scrollable">{{response | json}}</pre>
 			</div>
@@ -234,6 +234,7 @@
 				if (data.errors == null) {
 					// no errors!
 					$scope.setupForm();
+					$scope.form.$setPristine(true);
 					if ($scope.person.id != null && data.person != null) {
 						$scope.person = data.person;
 						$scope.successMessage = "You successfully edited " + $scope.person.firstname + " " + $scope.person.lastname;
