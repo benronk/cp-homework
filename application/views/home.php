@@ -15,7 +15,7 @@
 
 <div ng-controller="MyController" class="container">
 	<div class="page-header"><h1><a href="http://cphw.frostymugsoftware.com">cp-homework</a></h1></div>
-	<div class="row">
+	<div class="row" ng-hide="true">
 		<p class="btn-group">
 			<a class="btn btn-default" role="button" href="/">New</a>
 			<a ng-repeat="p in persons" class="btn btn-default" role="button" href="/{{p.id}}" title="{{p.firstname}} {{p.lastname}}">{{p.id}}</a>
@@ -121,7 +121,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-md-2 control-label">Hobbies</label>
+					<label class="col-md-2 control-label">Hobbies:</label>
 				</div>
 				<div class="form-group">
 					<label class="col-md-2 control-label">Cycling</label>
@@ -158,16 +158,23 @@
 				</div>
 				<div class="form-group">
 					<div class="col-md-offset-2 col-md-8">
-						<button class="btn btn-primary" ng-click="submit()">Submit</button>
+						<button class="btn btn-primary" ng-click="submit()">{{submitButtonName}}</button>
 					</div>
 				</div>
 			</form>
 		</div>
 		<div class="col-md-6">
-			<h4>Selected Person</h4>
-			<pre>{{person | json}}</pre>
-			<h4>All Persons</h4>
-			<pre>{{persons | json}}</pre>
+			<div class="row">
+				<a class="btn btn-default" href="/">New Person</a>
+				<h4>Persons</h4>
+				<ol>
+					<li ng-repeat="p in persons"><a href="/{{p.id}}">{{p.firstname}} {{p.lastname}}</a></li>
+				</ol>
+			</div>
+			<div class="row" ng-hide="response == null">
+				<h4>Response</h4>
+				<pre class="pre-scrollable">{{response | json}}</pre>
+			</div>
 		</div>
 	</div>
 </div>
@@ -175,36 +182,22 @@
 <script>
 	var app = angular.module('cp-homework', []);
 	
-	app.factory("queryParams", function() {
-		var qs = (function(a) {
-			if (a == "") return {};
-			var b = {};
-			for (var i = 0; i < a.length; ++i)
-			{
-				var p=a[i].split('=');
-				if (p.length != 2) continue;
-				b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-			}
-			return b;
-		})(window.location.search.substr(1).split('&'));
-
-		return qs;
-	});
-
-	app.controller('MyController', function($scope, $http, queryParams) {
+	app.controller('MyController', function($scope, $http) {
 		
 		$scope.person = <?php echo $person ?>;
 		$scope.persons = <?php echo $persons ?>;
 
-		$scope.load = function() {
-			//console.log("inside load", queryParams.id, queryParams.id != null, angular.isNumber(queryParams.id));
-			/*if (queryParams.id != null && angular.isNumber(parseInt(queryParams.id))) {
-				$scope.person = $scope.persons[parseInt(queryParams.id)-1];
-			}*/
+		$scope.setupForm = function() {
+			if ($scope.person.id && $scope.person.id != null) {
+				$scope.submitButtonName = "Edit";
+			} else {
+				$scope.submitButtonName = "Create";
+			}
 		};
-		//$scope.load();
+		$scope.setupForm();
 
 		$scope.submit = function() {
+			console.log($scope.person);
 			$http({
 				method: 'POST',
 				url: '/upsert',
@@ -212,7 +205,20 @@
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			})
 			.success(function(data) {
-				$scope.person = data.person;
+				$scope.response = data;
+
+				if (data.errors == null) {
+					// no errors!
+					if ($scope.person.id != null && data.person != null) {
+						$scope.person = data.person;
+					} else {
+						// clear the form so we can insert another
+						$scope.person = {};
+					}
+				} else {
+					// Show error message(s). Don't touch what's in the form
+				}
+
 				$scope.persons = data.persons;
 			})
 			.error(function(data) {

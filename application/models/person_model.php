@@ -1,81 +1,105 @@
 ﻿<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
-class Person_model extends CI_Model
+class Person_model extends CI_Model 
 {
-	public function __construct()
+
+	public function __construct() 
 	{
 		$this->load->database();
 	}
 
-	public function get_all()
+	public function get_all() 
 	{
-		//$query = $this->db->get('persons');
-
-		$this->db->select('id, firstname, lastname');
-		$query = $this->db->get('persons');
-
-		return $query->result_array();
-	}
-
-	public function get($id = FALSE)
-	{
-		if (!$id === FALSE)
+		try 
 		{
-			$query = $this->db->get_where('persons', array('id' => $id));
-			return $query->row_array();
-		}
-		else
+			$this->db->select('id, firstname, lastname');
+			$query = $this->db->get('persons');
+
+			return $query->result_array();
+		} 
+		catch (Exception $e) 
 		{
-			return;
+			log_message('error', 'model/person_model/get_all, Exception, ' . $e->getMessage());
+			return FALSE;
 		}
 	}
 
-	public function upsert($data)
+	public function get($id = FALSE) 
 	{
-		//log_message('error', '$data[\'id\']: ' . $data['id']);
-		//log_message('error', "$data['id'] != null: " . $data['id'] != null);
-		//log_message('error', "is_numeric($data['id']): " . is_numeric($data['id']));
-		
-		if ($data['id'] != null)
+		try 
 		{
-			if (is_numeric($data['id']))
+			if ($id !== FALSE) 
 			{
-//				$this->db->where('id', $data['id'])->update('persons', array(
-//					'firstname' => $data['firstname'],
-//					'lastname' => $data['lastname'],
-//					'email' => $data['email'],
-//					'sex' => $data['sex'],
-//					'city' => $data['city'],
-//					'state' => $data['state'],
-//					'comments' => $data['comments'],
-//					'hobby_cycling' => $data['hobby_cycling'],
-//					'hobby_frisbee' => $data['hobby_frisbee'],
-//					'hobby_skiing' => $data['hobby_skiing']
-//				));
-				$this->db->where('id', $data['id'])->update('persons', $data);
-
-				return $data['id'];
+				$query = $this->db->get_where('persons', array('id' => $id));
+				return $query->row_array();
+			} 
+			else 
+			{
+				return FALSE;
 			}
-		}
-		else
+		} 
+		catch (Exception $e) 
 		{
-//			$this->db->insert('persons', array(
-//				'firstname' => $data['firstname'],
-//				'lastname' => $data['lastname'],
-//				'email' => $data['email'],
-//				'sex' => $data['sex'],
-//				'city' => $data['city'],
-//				'state' => $data['state'],
-//				'comments' => $data['comments'],
-//				'hobby_cycling' => $data['hobby_cycling'],
-//				'hobby_frisbee' => $data['hobby_frisbee'],
-//				'hobby_skiing' => $data['hobby_skiing']
-//			));
-			$this->db->insert('persons', $data);
-
-			return $this->db->insert_id();
+			log_message('error', 'model/person_model/get, Exception, ' . $e->getMessage());
+			return FALSE;
 		}
+	}
 
-		//return 1;
+	public function insert($firstname, $lastname, $email, $sex, $city, $state, $comments, $hobby_cycling, $hobby_frisbee, $hobby_skiing) 
+	{
+		try 
+		{
+			$this->db->insert('persons', array(
+				'firstname' => $firstname,
+				'lastname' => $lastname,
+				'email' => $email,
+				'sex' => $sex,
+				'city' => $city,
+				'state' => $state,
+				'comments' => $comments,
+				'hobby_cycling' => $hobby_cycling,
+				'hobby_frisbee' => $hobby_frisbee,
+				'hobby_skiing' => $hobby_skiing
+			));
+			
+			if ($this->db->affected_rows() == 1)
+				return $this->db->insert_id();
+			else
+			{
+				log_message('error', "model/person_model/insert, affected rows == ".$this->db->affected_rows()." expected 1");
+				return FALSE;
+			}
+		} 
+		catch (Exception $e) 
+		{
+			log_message('error', "model/person_model/insert, Exception, " . $e->getMessage());
+			return FALSE;
+		}
+	}
+
+	public function update($id, $firstname, $lastname, $email, $sex, $city, $state, $comments, $hobby_cycling, $hobby_frisbee, $hobby_skiing) 
+	{
+		try 
+		{
+			$this->db->where('id', $id)->update('persons', array(
+				'firstname' => $firstname,
+				'lastname' => $lastname,
+				'email' => $email,
+				'sex' => $sex,
+				'city' => $city,
+				'state' => $state,
+				'comments' => $comments,
+				'hobby_cycling' => $hobby_cycling,
+				'hobby_frisbee' => $hobby_frisbee,
+				'hobby_skiing' => $hobby_skiing
+			));
+
+			return $id;
+		} 
+		catch (Exception $e) 
+		{
+			log_message('error', "model/person_model/update, Exception, " . $e->getMessage());
+			return FALSE;
+		}
 	}
 }

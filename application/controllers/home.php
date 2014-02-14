@@ -10,17 +10,14 @@ class Home extends CI_Controller {
 
 	public function index($id = FALSE)
 	{
-		if ($id == FALSE) { 
-			$data['person'] = '{}';
-			$data['persons'] = json_encode($this->person_model->get_all());
-			$this->load->view('home', $data);
+		$data['person'] = '{}';
+		if ($id !== FALSE) 
+		{ 
+			$data['person'] = json_encode($this->person_model->get($id), JSON_HEX_TAG);
 		}
-		else
-		{
-			$data['person'] = json_encode($this->person_model->get($id));
-			$data['persons'] = json_encode($this->person_model->get_all());
-			$this->load->view('home', $data);
-		}
+		
+		$data['persons'] = json_encode($this->person_model->get_all(), JSON_HEX_TAG);
+		$this->load->view('home', $data);
 	}
 
 	public function upsert()
@@ -28,48 +25,68 @@ class Home extends CI_Controller {
 		$this->load->helper(array('url', 'form'));
 		$this->load->library('form_validation');
 		
-		$this->form_validation->set_rules('firstname', 'Firstname', 'required');
-		$this->form_validation->set_rules('lastname', 'Lastname', 'required');
-		$this->form_validation->set_rules('email', 'Email Address', 'required');
-		
-		/*
-		- This will be sent in via ajax
-		- Validate and send in, get the id back, regardless of insert or update
-		- get(id) and get_all() and return as json
-		- Could include error/success messages in the returned json
-		*/
+		$this->form_validation->set_rules('id', 'Id', 'is_natural_no_zero');
+		$this->form_validation->set_rules('firstname', 'Firstname', 'required|max_length[50]');
+		$this->form_validation->set_rules('lastname', 'Lastname', 'required|max_length[50]');
+		$this->form_validation->set_rules('email', 'Email Address', 'required|valid_email|max_length[100]');
+		$this->form_validation->set_rules('sex', 'Sex', 'required|alpha|exact_length[1]');
+		$this->form_validation->set_rules('city', 'City', 'required|max_length[50]');
+		$this->form_validation->set_rules('state', 'State', 'required|alpha|exact_length[2]');
+		$this->form_validation->set_rules('comments', 'Comments', 'required');
+		$this->form_validation->set_rules('hobby_cycling', 'Hobby Cycling', 'required|less_than[2]|greater_than[-1]');
+		$this->form_validation->set_rules('hobby_frisbee', 'Hobby Frisbee', 'required|less_than[2]|greater_than[-1]');
+		$this->form_validation->set_rules('hobby_skiing', 'Hobby Skiing', 'required|less_than[2]|greater_than[-1]');
 		
 		if ($this->form_validation->run() == TRUE)
 		{
-			$upsert_data = array(
-				'firstname' => $this->input->post('firstname'),
-				'lastname' => $this->input->post('lastname'),
-				'email' => $this->input->post('email'),
-				'sex' => $this->input->post('sex'),
-				'city' => $this->input->post('city'),
-				'state' => $this->input->post('state'),
-				'comments' => $this->input->post('comments'),
-				'hobby_cycling' => $this->input->post('hobby_cycling'),
-				'hobby_frisbee' => $this->input->post('hobby_frisbee'),
-				'hobby_skiing' => $this->input->post('hobby_skiing')
-			);
-			$is_update = false;
-			if ($this->input->post('id') && $this->input->post('id') != null && is_numeric($this->input->post('id')))
+			if ($this->input->post('id') && $this->input->post('id') != null)
 			{
-				//log_message('error', 'id exists and is numeric $this->input->post(\'id\'): ' . $this->input->post('id'));
-				$upsert_data['id'] = $this->input->post('id');
-				$is_update = true;
-			}
+				$id = $this->person_model->update(
+					$this->input->post('id'),
+					$this->input->post('firstname'),
+					$this->input->post('lastname'),
+					$this->input->post('email'),
+					$this->input->post('sex'),
+					$this->input->post('city'),
+					$this->input->post('state'),
+					$this->input->post('comments'),
+					$this->input->post('hobby_cycling'),
+					$this->input->post('hobby_frisbee'),
+					$this->input->post('hobby_skiing')
+				);
 
-			$id = $this->person_model->upsert($upsert_data);
-			if ($is_update)
-			{
-				$data['person'] = $this->person_model->get($id);
+				if ($id === FALSE) 
+				{
+					$data['errors'] = ["Problem editing person."];
+				}
+				else 
+				{
+					$data['person'] = $this->person_model->get($id);
+				}
 			}
 			else
 			{
-				$data['person'] = '{}';
+				$id = $this->person_model->insert(
+					$this->input->post('firstname'),
+					$this->input->post('lastname'),
+					$this->input->post('email'),
+					$this->input->post('sex'),
+					$this->input->post('city'),
+					$this->input->post('state'),
+					$this->input->post('comments'),
+					$this->input->post('hobby_cycling'),
+					$this->input->post('hobby_frisbee'),
+					$this->input->post('hobby_skiing')
+				);
+				if ($id === FALSE) 
+				{
+					$data['errors'] = ["Problem creating person."];
+				}
 			}
+		}
+		else 
+		{
+			$data['errors'] = explode("\n", str_replace(array("<p>", "</p>"), "", rtrim(validation_errors())));
 		}
 		
 		$data['persons'] = $this->person_model->get_all();
