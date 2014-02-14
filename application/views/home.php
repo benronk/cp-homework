@@ -15,14 +15,26 @@
 
 <div ng-controller="MyController" class="container">
 	<div class="page-header"><h1><a href="http://cphw.frostymugsoftware.com">cp-homework</a></h1></div>
-	<div class="row" ng-hide="true">
+	<div class="row" ng-hide="true" ng-cloak>
 		<p class="btn-group">
 			<a class="btn btn-default" role="button" href="/">New</a>
 			<a ng-repeat="p in persons" class="btn btn-default" role="button" href="/{{p.id}}" title="{{p.firstname}} {{p.lastname}}">{{p.id}}</a>
 		</p>
 	</div>
-	<div class="row">
+	<div class="row" ng-cloak>
 		<div class="col-md-6">
+			<div class="row"><h2>{{formHeader}}</h2></div>
+			<div class="row alert alert-danger col-md-11" ng-hide="response.errors == null">
+				<span><strong>Errors:</strong></span>
+				<ul>
+					<li ng-repeat="e in response.errors">{{e}}</li>
+				</ul>
+			</div>
+			<div class="row alert alert-success alert-dismissable col-md-11" ng-hide="successMessage == null">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				{{successMessage}}
+			</div>
+
 			<form class="form-horizontal" role="form">
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="firstname">Firstname</label>
@@ -159,13 +171,13 @@
 				<div class="form-group">
 					<div class="col-md-offset-2 col-md-8">
 						<button class="btn btn-primary" ng-click="submit()">{{submitButtonName}}</button>
+						<a class="btn btn-default" href="/">New Person</a>
 					</div>
 				</div>
 			</form>
 		</div>
 		<div class="col-md-6">
 			<div class="row">
-				<a class="btn btn-default" href="/">New Person</a>
 				<h4>Persons</h4>
 				<ol>
 					<li ng-repeat="p in persons"><a href="/{{p.id}}">{{p.firstname}} {{p.lastname}}</a></li>
@@ -188,9 +200,11 @@
 		$scope.persons = <?php echo $persons ?>;
 
 		$scope.setupForm = function() {
-			if ($scope.person.id && $scope.person.id != null) {
+			if ($scope.person.id != null) {
+				$scope.formHeader = "Editing: " + $scope.person.firstname + " " + $scope.person.lastname;
 				$scope.submitButtonName = "Edit";
 			} else {
+				$scope.formHeader = "Create new person";
 				$scope.submitButtonName = "Create";
 			}
 		};
@@ -209,14 +223,18 @@
 
 				if (data.errors == null) {
 					// no errors!
+					$scope.setupForm();
 					if ($scope.person.id != null && data.person != null) {
 						$scope.person = data.person;
+						$scope.successMessage = "You successfully edited " + $scope.person.firstname + " " + $scope.person.lastname;
 					} else {
 						// clear the form so we can insert another
 						$scope.person = {};
+						$scope.successMessage = "You successfully inserted a new person.";
 					}
 				} else {
-					// Show error message(s). Don't touch what's in the form
+					// Show error message(s). Leave the form untouched.
+					$scope.successMessage = null;
 				}
 
 				$scope.persons = data.persons;
